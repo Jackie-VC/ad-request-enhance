@@ -2,6 +2,8 @@ package com.interview.across.controller;
 
 import com.interview.across.exception.BadRequestException;
 import com.interview.across.exception.ErrorCode.BadRequest;
+import com.interview.across.exception.ErrorCode.NotFound;
+import com.interview.across.exception.NotFoundException;
 import com.interview.across.exception.ServiceException;
 import com.interview.across.model.AdRequestModel;
 import com.interview.across.service.AdRequestEnhanceService;
@@ -52,21 +54,30 @@ public class AdRequestEnhanceServiceController {
     CompletableFuture<Map<String, Object>> geoCompletedFuture = adRequestEnhanceService
         .requestGeoInfo(model, deviceIp);
     Map<String, Object> geo = geoCompletedFuture.get();
+    if (geo == null) {
+      throw new NotFoundException(NotFound.GEO_INFORMATION);
+    }
     String countryCode = (String) geo.get("country_code");
     if (!"US".equals(countryCode)) {
       throw new BadRequestException(BadRequest.NOT_US_IP);
+    }
+
+    // request publisher, if publisher id can not find, return error message
+    CompletableFuture<Map<String, Object>> publisherCompletedFuture = adRequestEnhanceService
+        .requestPublisherDetail(model, siteId);
+    Map<String, Object> publisher = publisherCompletedFuture.get();
+    if (publisher == null || publisher.get("id") == null) {
+      throw new NotFoundException(NotFound.PUBLISHER_ID);
     }
 
     // request demographics
     CompletableFuture<Map<String, Object>> demographicsCompletedFuture = adRequestEnhanceService
         .requestDemographics(model, siteId);
 
-    // request publisher
-    CompletableFuture<Map<String, Object>> publisherCompletedFuture = adRequestEnhanceService
-        .requestPublisherDetail(model, siteId);
-
     Map<String, Object> demographics = demographicsCompletedFuture.get();
-    Map<String, Object> publisher = publisherCompletedFuture.get();
+    if (demographics == null) {
+      throw new NotFoundException(NotFound.DEMOGRAPHICS);
+    }
     adRequestEnhanceService.injectDemographics(model, demographics);
     adRequestEnhanceService.injectPublisherDetail(model, publisher);
     adRequestEnhanceService.injectGeo(model, geo);

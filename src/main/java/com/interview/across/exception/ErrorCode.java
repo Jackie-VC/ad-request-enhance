@@ -55,4 +55,28 @@ public enum ErrorCode {
     }
   }
 
+  public enum NotFound implements IError {
+    PUBLISHER_ID("10400001", "Publisher id is not found"),
+    GEO_INFORMATION("10400002", "Geo information is not found"),
+    DEMOGRAPHICS("10400003", "Demographics information is not found");
+
+    private String code;
+    private String message;
+
+    NotFound(String code, String message) {
+      this.code = code;
+      this.message = message;
+    }
+
+    @Override
+    public String getCode() {
+      return code;
+    }
+
+    @Override
+    public String getMessage() {
+      return message;
+    }
+  }
+
 }
