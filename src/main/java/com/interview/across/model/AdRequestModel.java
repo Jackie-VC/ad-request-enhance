@@ -9,7 +9,7 @@ import java.util.Map;
  * @ date: 29/08/2018
  */
 @JsonNaming(PropertyNamingStrategy.SnakeCaseStrategy.class)
-public class AdRequest {
+public class AdRequestModel {
 
   private Map<String, Object> site;
   private Map<String, Object> device;

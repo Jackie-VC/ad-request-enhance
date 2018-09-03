@@ -1,10 +1,9 @@
 package com.interview.across.controller;
 
 import com.interview.across.exception.BadRequestException;
-import com.interview.across.exception.ErrorCode;
 import com.interview.across.exception.ErrorCode.BadRequest;
 import com.interview.across.exception.ServiceException;
-import com.interview.across.model.AdRequest;
+import com.interview.across.model.AdRequestModel;
 import com.interview.across.service.AdRequestEnhanceService;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -29,7 +28,7 @@ public class AdRequestEnhanceServiceController {
   private AdRequestEnhanceService adRequestEnhanceService;
 
   @RequestMapping(value = {}, method = RequestMethod.POST)
-  public AdRequest request(HttpServletRequest req, @RequestBody AdRequest model)
+  public AdRequestModel request(HttpServletRequest req, @RequestBody AdRequestModel model)
       throws ServiceException, ExecutionException, InterruptedException {
 
     Map<String, Object> site = model.getSite();
@@ -50,33 +49,27 @@ public class AdRequestEnhanceServiceController {
     }
 
     // if it is not U.S. IP, return error message
-    boolean isUsIp = adRequestEnhanceService.isUsIp(deviceIp);
-    if (!isUsIp) {
-      System.out.println("==============not us");
+    CompletableFuture<Map<String, Object>> geoCompletedFuture = adRequestEnhanceService
+        .requestGeoInfo(model, deviceIp);
+    Map<String, Object> geo = geoCompletedFuture.get();
+    String countryCode = (String) geo.get("country_code");
+    if (!"US".equals(countryCode)) {
       throw new BadRequestException(BadRequest.NOT_US_IP);
-    } else {
-
-
-
-    // inject demographics
-    CompletableFuture<AdRequest> demographicsCompletedFuture = adRequestEnhanceService
-        .injectDemographics(model, siteId);
-
-    // inject publisher
-    CompletableFuture<AdRequest> publisherCompletedFuture = adRequestEnhanceService
-        .injectPublisherDetail(model, siteId);
-
-    //inject geo
-    CompletableFuture<AdRequest> geoCompletedFuture = adRequestEnhanceService
-        .injectGeo(model, deviceIp);
-
-    CompletableFuture
-        .allOf(publisherCompletedFuture, geoCompletedFuture)
-        .join();
-
-    return model;
     }
+
+    // request demographics
+    CompletableFuture<Map<String, Object>> demographicsCompletedFuture = adRequestEnhanceService
+        .requestDemographics(model, siteId);
+
+    // request publisher
+    CompletableFuture<Map<String, Object>> publisherCompletedFuture = adRequestEnhanceService
+        .requestPublisherDetail(model, siteId);
+
+    Map<String, Object> demographics = demographicsCompletedFuture.get();
+    Map<String, Object> publisher = publisherCompletedFuture.get();
+    adRequestEnhanceService.injectDemographics(model, demographics);
+    adRequestEnhanceService.injectPublisherDetail(model, publisher);
+    adRequestEnhanceService.injectGeo(model, geo);
+    return model;
   }
-
-
 }
