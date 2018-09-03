@@ -40,9 +40,6 @@ public class AdRequestEnhanceServiceController {
       @RequestParam(defaultValue = "true") boolean injectPublisher,
       @RequestParam(defaultValue = "true") boolean injectGeo)
       throws ServiceException, ExecutionException, InterruptedException {
-    if (injectGeo) {
-      throw new NullPointerException();
-    }
 
     Map<String, Object> site = model.getSite();
     String sitePage = (String) site.get("page");

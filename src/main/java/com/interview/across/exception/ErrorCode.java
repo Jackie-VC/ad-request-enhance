@@ -56,6 +56,7 @@ public enum ErrorCode {
   }
 
   public enum NotFound implements IError {
+    PAGE_NOT_FOUND("10400000", "Page not found"),
     PUBLISHER_ID("10400001", "Publisher id is not found"),
     GEO_INFORMATION("10400002", "Geo information is not found"),
     DEMOGRAPHICS("10400003", "Demographics information is not found");

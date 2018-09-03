@@ -1,6 +1,8 @@
 package com.interview.across.controller;
 
 import com.interview.across.exception.ApiErrorResponse;
+import com.interview.across.exception.ErrorCode.NotFound;
+import com.interview.across.exception.NotFoundException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -19,7 +21,7 @@ public class CustomisedErrorController implements ErrorController {
 
   @RequestMapping("/error")
   @ResponseBody
-  public ApiErrorResponse request(HttpServletRequest req) {
+  public ApiErrorResponse request(HttpServletRequest req) throws NotFoundException {
     int statusCode = Integer
         .parseInt(req.getAttribute(RequestDispatcher.ERROR_STATUS_CODE).toString());
     String errorCode = "20" + statusCode + "000";
@@ -29,7 +31,7 @@ public class CustomisedErrorController implements ErrorController {
     if (errorException != null) {
       exception = req.getAttribute(RequestDispatcher.ERROR_EXCEPTION).toString();
     } else {
-      exception = "Page not found";
+      throw new NotFoundException(NotFound.PAGE_NOT_FOUND);
     }
 
     return new ApiErrorResponse(statusCode, errorCode, message, exception);
