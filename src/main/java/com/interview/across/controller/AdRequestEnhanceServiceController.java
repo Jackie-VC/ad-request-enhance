@@ -27,8 +27,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AdRequestEnhanceServiceController {
 
+  private final AdRequestEnhanceService adRequestEnhanceService;
+
   @Autowired
-  private AdRequestEnhanceService adRequestEnhanceService;
+  public AdRequestEnhanceServiceController(AdRequestEnhanceService adRequestEnhanceService) {
+    this.adRequestEnhanceService = adRequestEnhanceService;
+  }
 
   @RequestMapping(value = {}, method = RequestMethod.POST)
   public AdRequestModel request(HttpServletRequest req, @RequestBody AdRequestModel model,

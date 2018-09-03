@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RequestMapping(produces = "application/json")
 @RestController
-public class CustomedErrorController implements ErrorController {
+public class CustomisedErrorController implements ErrorController {
 
 
   @RequestMapping("/error")
@@ -24,7 +24,7 @@ public class CustomedErrorController implements ErrorController {
         .parseInt(req.getAttribute(RequestDispatcher.ERROR_STATUS_CODE).toString());
     String errorCode = "20" + statusCode + "000";
     String message = req.getAttribute(RequestDispatcher.ERROR_MESSAGE).toString();
-    String exception = "";
+    String exception;
     Object errorException = req.getAttribute(RequestDispatcher.ERROR_EXCEPTION);
     if (errorException != null) {
       exception = req.getAttribute(RequestDispatcher.ERROR_EXCEPTION).toString();
