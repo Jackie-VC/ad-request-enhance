@@ -7,6 +7,7 @@ import com.interview.across.service.AdRequestEnhanceService;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -18,6 +19,14 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class AdRequestEnhanceServiceImpl implements AdRequestEnhanceService {
 
+
+  @Value("${geo.ipstack.url}")
+  private String geoUrl;
+
+  @Value("${geo.ipstack.access_key}")
+  private String accessKey;
+
+  private Map<String, Object> geo = new HashMap<>();
 
   /**
    * inject the demographics according to the given data
@@ -75,27 +84,20 @@ public class AdRequestEnhanceServiceImpl implements AdRequestEnhanceService {
 
   /**
    * inject geo informaiton according to ipstack api
-   * @param model
-   * @param deviceIp
-   * @param geoUrl
-   * @param accessKey
-   * @return
-   * @throws InternalException
    */
   @Async
   @Override
-  public CompletableFuture<AdRequest> injectGeo(AdRequest model, String deviceIp,
-      String geoUrl, String accessKey)
+  public CompletableFuture<AdRequest> injectGeo(AdRequest model, String deviceIp)
       throws InternalException {
-    RestTemplate template = new RestTemplate();
+//    RestTemplate template = new RestTemplate();
     Map<String, Object> device = model.getDevice();
-    if (geoUrl.charAt(geoUrl.length() - 1) != '/') {
-      geoUrl = geoUrl + "/";
-    }
-    geoUrl = geoUrl + deviceIp + "?access_key=" + accessKey;
+//    if (geoUrl.charAt(geoUrl.length() - 1) != '/') {
+//      geoUrl = geoUrl + "/";
+//    }
+//    geoUrl = geoUrl + deviceIp + "?access_key=" + accessKey;
 
     try {
-      Map<String, Object> geo = template.getForObject(geoUrl, Map.class);
+//      Map<String, Object> geo = template.getForObject(geoUrl, Map.class);
       String countryCode = (String) geo.get("country_code");
       Map<String, Object> country = new HashMap<>();
       country.put("country", countryCode);
@@ -106,5 +108,24 @@ public class AdRequestEnhanceServiceImpl implements AdRequestEnhanceService {
           "External Request Error: Sometimes, bad things happen to good requests");
     }
     return CompletableFuture.completedFuture(model);
+  }
+
+  @Override
+  public boolean isUsIp(String deviceIp) throws InternalException {
+    RestTemplate template = new RestTemplate();
+    if (geoUrl.charAt(geoUrl.length() - 1) != '/') {
+      geoUrl = geoUrl + "/";
+    }
+    geoUrl = geoUrl + deviceIp + "?access_key=" + accessKey;
+
+    try {
+      geo = template.getForObject(geoUrl, Map.class);
+      String countryCode = (String) geo.get("country_code");
+
+      return "US".equals(countryCode);
+    } catch (Exception e) {
+      throw new InternalException(Internal.OPERATION_FAILED,
+          "External Request Error: Sometimes, bad things happen to good requests");
+    }
   }
 }

@@ -33,7 +33,8 @@ public enum ErrorCode {
   }
 
   public enum BadRequest implements IError {
-    MISSING_PARAMETER("10400001", "Missing parameters: %s");
+    MISSING_PARAMETER("10400001", "Missing parameters: %s"),
+    NOT_US_IP("10400002", "The ip is not in U.S.");
 
     private String code;
     private String message;

@@ -16,7 +16,8 @@ public interface AdRequestEnhanceService {
   CompletableFuture<AdRequest> injectPublisherDetail(AdRequest model, String siteId)
       throws InternalException;
 
-  CompletableFuture<AdRequest> injectGeo(AdRequest model, String deviceId, String geoUrl,
-      String accessKey) throws InternalException;
+  CompletableFuture<AdRequest> injectGeo(AdRequest model, String deviceId) throws InternalException;
+
+  boolean isUsIp(String deviceIp) throws InternalException;
 
 }

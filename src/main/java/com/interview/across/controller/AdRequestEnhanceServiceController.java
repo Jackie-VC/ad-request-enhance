@@ -7,9 +7,9 @@ import com.interview.across.model.AdRequest;
 import com.interview.across.service.AdRequestEnhanceService;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,18 +24,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class AdRequestEnhanceServiceController {
 
-  @Value("${geo.ipstack.url}")
-  private String geoUrl;
-
-  @Value("${geo.ipstack.access_key}")
-  private String accessKey;
-
   @Autowired
   private AdRequestEnhanceService adRequestEnhanceService;
 
   @RequestMapping(value = {}, method = RequestMethod.POST)
   public AdRequest request(HttpServletRequest req, @RequestBody AdRequest model)
-      throws ServiceException {
+      throws ServiceException, ExecutionException, InterruptedException {
 
     Map<String, Object> site = model.getSite();
     String sitePage = (String) site.get("page");
@@ -54,6 +48,15 @@ public class AdRequestEnhanceServiceController {
       throw new BadRequestException(BadRequest.MISSING_PARAMETER, "device.ip");
     }
 
+    // if it is not U.S. IP, return error message
+    boolean isUsIp = adRequestEnhanceService.isUsIp(deviceIp);
+    if (!isUsIp) {
+      System.out.println("==============not us");
+      throw new BadRequestException(BadRequest.NOT_US_IP);
+    } else {
+
+
+
     // inject demographics
     CompletableFuture<AdRequest> demographicsCompletedFuture = adRequestEnhanceService
         .injectDemographics(model, siteId);
@@ -64,14 +67,14 @@ public class AdRequestEnhanceServiceController {
 
     //inject geo
     CompletableFuture<AdRequest> geoCompletedFuture = adRequestEnhanceService
-        .injectGeo(model, deviceIp, geoUrl, accessKey);
+        .injectGeo(model, deviceIp);
 
     CompletableFuture
         .allOf(demographicsCompletedFuture, publisherCompletedFuture, geoCompletedFuture)
         .join();
 
     return model;
-
+    }
   }
 
 
