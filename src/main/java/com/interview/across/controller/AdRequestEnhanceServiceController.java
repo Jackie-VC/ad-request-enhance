@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -30,7 +31,10 @@ public class AdRequestEnhanceServiceController {
   private AdRequestEnhanceService adRequestEnhanceService;
 
   @RequestMapping(value = {}, method = RequestMethod.POST)
-  public AdRequestModel request(HttpServletRequest req, @RequestBody AdRequestModel model)
+  public AdRequestModel request(HttpServletRequest req, @RequestBody AdRequestModel model,
+      @RequestParam(defaultValue = "true") boolean injectDemographics,
+      @RequestParam(defaultValue = "true") boolean injectPublisher,
+      @RequestParam(defaultValue = "true") boolean injectGeo)
       throws ServiceException, ExecutionException, InterruptedException {
 
     Map<String, Object> site = model.getSite();
@@ -40,7 +44,7 @@ public class AdRequestEnhanceServiceController {
     String deviceIp = (String) device.get("ip");
 
     // validate the required parameters
-    if (StringUtils.isEmpty(siteId)) {
+    if ((injectDemographics || injectPublisher) && StringUtils.isEmpty(siteId)) {
       throw new BadRequestException(BadRequest.MISSING_PARAMETER, "site.id");
     }
     if (StringUtils.isEmpty(sitePage)) {
@@ -62,25 +66,36 @@ public class AdRequestEnhanceServiceController {
       throw new BadRequestException(BadRequest.NOT_US_IP);
     }
 
-    // request publisher, if publisher id can not find, return error message
+    // request publisher
     CompletableFuture<Map<String, Object>> publisherCompletedFuture = adRequestEnhanceService
         .requestPublisherDetail(model, siteId);
-    Map<String, Object> publisher = publisherCompletedFuture.get();
-    if (publisher == null || publisher.get("id") == null) {
-      throw new NotFoundException(NotFound.PUBLISHER_ID);
-    }
-
     // request demographics
     CompletableFuture<Map<String, Object>> demographicsCompletedFuture = adRequestEnhanceService
         .requestDemographics(model, siteId);
 
-    Map<String, Object> demographics = demographicsCompletedFuture.get();
-    if (demographics == null) {
-      throw new NotFoundException(NotFound.DEMOGRAPHICS);
+    // if need to inject publisher
+    if (injectPublisher) {
+      Map<String, Object> publisher = publisherCompletedFuture.get();
+      // if publisher id can not find, return error message
+      if (publisher == null || publisher.get("id") == null) {
+        throw new NotFoundException(NotFound.PUBLISHER_ID);
+      }
+      adRequestEnhanceService.injectPublisherDetail(model, publisher);
     }
-    adRequestEnhanceService.injectDemographics(model, demographics);
-    adRequestEnhanceService.injectPublisherDetail(model, publisher);
-    adRequestEnhanceService.injectGeo(model, geo);
+
+    // if need inject demographics
+    if (injectDemographics) {
+      Map<String, Object> demographics = demographicsCompletedFuture.get();
+      if (demographics == null) {
+        throw new NotFoundException(NotFound.DEMOGRAPHICS);
+      }
+      adRequestEnhanceService.injectDemographics(model, demographics);
+    }
+
+    // if need inject geo
+    if (injectGeo) {
+      adRequestEnhanceService.injectGeo(model, geo);
+    }
     return model;
   }
 }

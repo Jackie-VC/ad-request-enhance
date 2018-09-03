@@ -83,4 +83,64 @@ public class AcrossApplicationTests {
     }
   }
 
+  @Test
+  public synchronized void testNotInjectDemographics() throws Exception {
+    String requestModel = "{\n"
+        + "\"site\": {\n"
+        + "\"id\": \"foo123\",\n"
+        + "\"page\": \"http://www.foo.com/why-foo\" },\n"
+        + "\"device\": {\n"
+        + "\"ip\": \"218.107.132.66\"\n"
+        + "}, \"user\": {\n"
+        + "\"id\": \"9cb89r\" }\n"
+        + "}";
+
+    String result = this.mockMvc.perform(
+        post("/RequestEnhance?injectDemographics=false").contentType(MediaType.APPLICATION_JSON).content(requestModel))
+        .andReturn().getResponse().getContentAsString();
+    if (!result.contains(EXTERNAL_REQUEST_ERROR)) {
+      Assert.assertTrue(!result.contains("demographics"));
+    }
+  }
+
+  @Test
+  public synchronized void testNotInjectPublisher() throws Exception {
+    String requestModel = "{\n"
+        + "\"site\": {\n"
+        + "\"id\": \"foo123\",\n"
+        + "\"page\": \"http://www.foo.com/why-foo\" },\n"
+        + "\"device\": {\n"
+        + "\"ip\": \"218.107.132.66\"\n"
+        + "}, \"user\": {\n"
+        + "\"id\": \"9cb89r\" }\n"
+        + "}";
+
+    String result = this.mockMvc.perform(
+        post("/RequestEnhance?injectPublisher=false").contentType(MediaType.APPLICATION_JSON).content(requestModel))
+        .andReturn().getResponse().getContentAsString();
+    if (!result.contains(EXTERNAL_REQUEST_ERROR)) {
+      Assert.assertTrue(!result.contains("publisher"));
+    }
+  }
+
+  @Test
+  public synchronized void testNotInjectGeo() throws Exception {
+    String requestModel = "{\n"
+        + "\"site\": {\n"
+        + "\"id\": \"foo123\",\n"
+        + "\"page\": \"http://www.foo.com/why-foo\" },\n"
+        + "\"device\": {\n"
+        + "\"ip\": \"218.107.132.66\"\n"
+        + "}, \"user\": {\n"
+        + "\"id\": \"9cb89r\" }\n"
+        + "}";
+
+    String result = this.mockMvc.perform(
+        post("/RequestEnhance?injectGeo=false").contentType(MediaType.APPLICATION_JSON).content(requestModel))
+        .andReturn().getResponse().getContentAsString();
+    if (!result.contains(EXTERNAL_REQUEST_ERROR)) {
+      Assert.assertTrue(!result.contains("geo"));
+    }
+  }
+
 }
