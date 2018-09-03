@@ -113,13 +113,13 @@ public class AdRequestEnhanceServiceImpl implements AdRequestEnhanceService {
   @Override
   public boolean isUsIp(String deviceIp) throws InternalException {
     RestTemplate template = new RestTemplate();
-    if (geoUrl.charAt(geoUrl.length() - 1) != '/') {
-      geoUrl = geoUrl + "/";
-    }
-    geoUrl = geoUrl + deviceIp + "?access_key=" + accessKey;
-
+    String geoUrlLocal = geoUrl;
     try {
-      geo = template.getForObject(geoUrl, Map.class);
+      if (geoUrl.charAt(geoUrl.length() - 1) != '/') {
+        geoUrlLocal = geoUrl + "/";
+      }
+      geoUrlLocal = geoUrlLocal + deviceIp + "?access_key=" + accessKey;
+      geo = template.getForObject(geoUrlLocal, Map.class);
       String countryCode = (String) geo.get("country_code");
 
       return "US".equals(countryCode);

@@ -21,10 +21,10 @@ public class AcrossApplicationTests {
   @Autowired
   private MockMvc mockMvc;
 
-  private String EXTERNAL_REQUEST_ERROR = "External Request Error";
+  private static final String EXTERNAL_REQUEST_ERROR = "External Request Error";
 
   @Test
-  public synchronized void latencyTest() throws Exception {
+  public synchronized void correctness() throws Exception {
     String requestModel = "{\n"
         + "\"site\": {\n"
         + "\"id\": \"foo123\",\n"
@@ -37,7 +37,6 @@ public class AcrossApplicationTests {
     String result = this.mockMvc.perform(
         post("/RequestEnhance").contentType(MediaType.APPLICATION_JSON).content(requestModel))
         .andReturn().getResponse().getContentAsString();
-    System.out.println("latency>>>>>>>>>>>" + result);
     if (!result.contains(EXTERNAL_REQUEST_ERROR)) {
       Assert.assertTrue(result.contains("demographics"));
       Assert.assertTrue(result.contains("publisher"));
@@ -59,7 +58,6 @@ public class AcrossApplicationTests {
         post("/RequestEnhance").contentType(MediaType.APPLICATION_JSON).content(requestModel))
         .andReturn().getResponse().getContentAsString();
     if (!result.contains(EXTERNAL_REQUEST_ERROR)) {
-      System.out.println("=================" + result);
       Assert.assertTrue(
           result.contains(String.format(BadRequest.MISSING_PARAMETER.getMessage(), "site.id")));
     }
@@ -81,7 +79,6 @@ public class AcrossApplicationTests {
         post("/RequestEnhance").contentType(MediaType.APPLICATION_JSON).content(requestModel))
         .andReturn().getResponse().getContentAsString();
     if (!result.contains(EXTERNAL_REQUEST_ERROR)) {
-      System.out.println("notus>>>>>>>>>>>" + result);
       Assert.assertTrue(result.contains(BadRequest.NOT_US_IP.getMessage()));
     }
   }

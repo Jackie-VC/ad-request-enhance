@@ -1,6 +1,7 @@
 package com.interview.across.controller;
 
 import com.interview.across.exception.BadRequestException;
+import com.interview.across.exception.ErrorCode;
 import com.interview.across.exception.ErrorCode.BadRequest;
 import com.interview.across.exception.ServiceException;
 import com.interview.across.model.AdRequest;
@@ -70,7 +71,7 @@ public class AdRequestEnhanceServiceController {
         .injectGeo(model, deviceIp);
 
     CompletableFuture
-        .allOf(demographicsCompletedFuture, publisherCompletedFuture, geoCompletedFuture)
+        .allOf(publisherCompletedFuture, geoCompletedFuture)
         .join();
 
     return model;
