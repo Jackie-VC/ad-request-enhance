@@ -1,7 +1,5 @@
 package com.interview.across.exception;
 
-import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
@@ -45,12 +43,18 @@ public class GlobalExceptionHandler {
     return error;
   }
 
-  HttpStatus resolveAnnotatedResponseStatus(Exception exception) {
-    ResponseStatus annotation = findMergedAnnotation(Exception.class, ResponseStatus.class);
-    if (annotation != null) {
-      return annotation.value();
-    }
-    return HttpStatus.INTERNAL_SERVER_ERROR;
+  @ExceptionHandler(NotFoundException.class)
+  @ResponseStatus(HttpStatus.NOT_FOUND)
+  public @ResponseBody
+  ApiErrorResponse handleNotFoundException(final NotFoundException exception,
+      final HttpServletRequest request, final HttpServletResponse response) {
+
+    ApiErrorResponse error = new ApiErrorResponse();
+    error.setMessage(exception.getMessage());
+    error.setCode(exception.getCode());
+    error.setStatus(exception.getStatusCode());
+
+    return error;
   }
 
 }
