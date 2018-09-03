@@ -1,7 +1,8 @@
 package com.interview.across.service;
 
-import com.interview.across.model.RequestModel;
-import java.util.Map;
+import com.interview.across.exception.InternalException;
+import com.interview.across.model.AdRequest;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @ author: Chenglong Li
@@ -9,10 +10,13 @@ import java.util.Map;
  */
 public interface AdRequestEnhanceService {
 
-  void injectDemographics(RequestModel requestModel, Map<String, Object> demographics);
+  CompletableFuture<AdRequest> injectDemographics(AdRequest model, String siteId)
+      throws InternalException;
 
-  void injectPublisherDetail(RequestModel requestModel, Map<String, Object> publisherDetail);
+  CompletableFuture<AdRequest> injectPublisherDetail(AdRequest model, String siteId)
+      throws InternalException;
 
-  void injectGeo(RequestModel model, Map<String, Object> geo);
+  CompletableFuture<AdRequest> injectGeo(AdRequest model, String deviceId, String geoUrl,
+      String accessKey) throws InternalException;
 
 }
