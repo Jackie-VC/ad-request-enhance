@@ -17,7 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-public class AcrossApplicationTests {
+public class AdRequestEnhanceApplicationTests {
 
   @Autowired
   private MockMvc mockMvc;

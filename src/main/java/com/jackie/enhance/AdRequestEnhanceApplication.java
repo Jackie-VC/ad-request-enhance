@@ -9,10 +9,10 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 @EnableAsync
 @SpringBootApplication
-public class AcrossApplication {
+public class AdRequestEnhanceApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(AcrossApplication.class, args);
+    SpringApplication.run(AdRequestEnhanceApplication.class, args);
   }
 
   @Bean
