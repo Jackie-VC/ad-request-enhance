@@ -2,8 +2,8 @@ package com.interview.across;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
-import com.interview.across.exception.ErrorCode.BadRequest;
-import com.interview.across.exception.ErrorCode.NotFound;
+import com.jackie.enhance.exception.ErrorCode.BadRequest;
+import com.jackie.enhance.exception.ErrorCode.NotFound;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

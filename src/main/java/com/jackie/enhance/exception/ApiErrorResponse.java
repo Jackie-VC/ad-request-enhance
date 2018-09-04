@@ -1,4 +1,4 @@
-package com.interview.across.exception;
+package com.jackie.enhance.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;

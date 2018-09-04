@@ -1,7 +1,7 @@
-package com.interview.across.service;
+package com.jackie.enhance.service;
 
-import com.interview.across.exception.InternalException;
-import com.interview.across.model.AdRequestModel;
+import com.jackie.enhance.exception.InternalException;
+import com.jackie.enhance.model.AdRequestModel;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 

@@ -1,8 +1,8 @@
-package com.interview.across.controller;
+package com.jackie.enhance.controller;
 
-import com.interview.across.exception.ApiErrorResponse;
-import com.interview.across.exception.ErrorCode.NotFound;
-import com.interview.across.exception.NotFoundException;
+import com.jackie.enhance.exception.ApiErrorResponse;
+import com.jackie.enhance.exception.ErrorCode.NotFound;
+import com.jackie.enhance.exception.NotFoundException;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.boot.web.servlet.error.ErrorController;

@@ -1,4 +1,4 @@
-package com.interview.across.model;
+package com.jackie.enhance.model;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

@@ -1,4 +1,4 @@
-package com.interview.across.exception;
+package com.jackie.enhance.exception;
 
 /**
  * @ author: Chenglong Li

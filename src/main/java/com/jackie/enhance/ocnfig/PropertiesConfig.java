@@ -1,4 +1,4 @@
-package com.interview.across.ocnfig;
+package com.jackie.enhance.ocnfig;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
